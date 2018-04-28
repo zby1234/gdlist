@@ -1,13 +1,13 @@
 {
-  "name": "gdlist",
+  "name": "sharelist",
   "version": "0.1.0",
   "bin": "bin/www",
-  "repository": "https://github.com/reruin/gdlist",
+  "repository": "https://github.com/reruin/sharelist",
   "license": "Apache-2.0",
   "scripts": {
     "start": "set NODE_ENV=dev && node bin/www",
     "dev": "./node_modules/.bin/nodemon app",
-    "prd": "pm2 start app --env prod",
+    "prd": "pm2 start bin/www --env prod",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {

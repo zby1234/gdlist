@@ -1,4 +1,3 @@
-const service = require('./../models/gdlist')
 const base = require('../utils/base')
 const request = require('request')
 const config = require('../config')
@@ -20,7 +19,12 @@ module.exports = {
       }
       
     }
-    await ctx.render('manage',{access  , message , config:config.data})
+
+    if(act == 'export'){
+      ctx.body = config.data
+    }else{
+      await ctx.render('manage',{access  , message , config:config.data , providers:config.providers})
+    }
   },
 
   async update(ctx){
@@ -34,14 +38,14 @@ module.exports = {
     }
 
     if(act == 'path'){
-      let { name , path  } = ctx.request.body
+      let { name , path , provider  } = ctx.request.body
       
       if(Array.isArray(name)){
         path = name.map((i ,index)=>{
-          return { name:i , path:path[index]}
+          return { name:i , path:provider[index]+'://'+path[index]}
         })
       }else{
-        path = [{name , path}]
+        path = [{name , path:provider+'://'+path}]
       }
 
       let result = { status : 0 , message : ''}
@@ -67,8 +71,33 @@ module.exports = {
       cache.clear()
       message = '成功清除缓存'
     }
+    else if(act == 'cfg'){
+      let {enabled_proxy , cache_refresh_dir , cache_refresh_file} = ctx.request.body
+      let opts = {}
+      if(cache_refresh_dir){
+        cache_refresh_dir = parseInt(cache_refresh_dir)
+        if(!isNaN(cache_refresh_dir)){
+          opts.cache_refresh_dir = cache_refresh_dir * 1000
+        }
+      }
 
-    await ctx.render('manage',{ message , access : true , config:config.data})
+      if(cache_refresh_file){
+        cache_refresh_file = parseInt(cache_refresh_file)
+        if(!isNaN(cache_refresh_file)){
+          opts.cache_refresh_file = cache_refresh_file * 1000
+        }
+      }
+
+      if(enabled_proxy){
+        enabled_proxy = enabled_proxy == '1' ? 1 : 0
+        opts.enabled_proxy = enabled_proxy
+      }
+      await config.save( opts )
+      message = '保存成功'
+
+    }
+
+    await ctx.render('manage',{ message , access : true , config:config.data , providers:config.providers})
     
   }
 

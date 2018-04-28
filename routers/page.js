@@ -3,9 +3,9 @@
  */
 
 const router = require('koa-router')()
-const gdlist = require('../controllers/gdlist')
+const sharelist = require('../controllers/sharelist')
 
 const routers = router
-  .get('/:path(.*)', gdlist.index)
+  .get('/:path(.*)', sharelist.index)
  
 module.exports = routers
